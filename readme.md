@@ -1,4 +1,24 @@
-# ANIMAL MOBS
+# minetest mod mobs_animal
+
+IT add animals for farmin like cows, dogs chicken or cats.
+
+## Information
+
+This mod is forked to improve compatibility backguard for 0.4 engine. It also provides some new translatins and ajustments
+
+![](screenshot.png)
+
+### Depends
+
+* mobs
+* default
+
+Optionally
+
+* intlib
+* lucky_blocks
+
+## Animals:
 
 ### Bee
 Tends to buzz around flowers and gives honey when killed, you can also right-click a bee to pick it up and place in inventory. 3x bee's in a row can craft a beehive.
