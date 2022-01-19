@@ -2,8 +2,38 @@
 -- Load support for intllib.
 local path = minetest.get_modpath(minetest.get_current_modname()) .. "/"
 
-local S = minetest.get_translator and minetest.get_translator("mobs_animal") or
-		dofile(path .. "intllib.lua")
+if minetest.get_translator ~= nil then
+	S = minetest.get_translator("mobs")
+else
+	if minetest.get_modpath("intllib") then
+		dofile(minetest.get_modpath("intllib").."/init.lua")
+		if intllib.make_gettext_pair then
+			-- New method using gettext.
+			gettext, ngettext = intllib.make_gettext_pair()
+		else
+			-- Old method using text files.
+		gettext = intllib.Getter()
+		end
+		S = gettext
+	else
+	-- mock the translator function for MT 0.4
+		function minetest.translate(textdomain, str, ...)
+			local arg = {n=select('#', ...), ...}
+			return str:gsub("@(.)", function(matched)
+				local c = string.byte(matched)
+				if string.byte("1") <= c and c <= string.byte("9") then
+					return arg[c - string.byte("0")]
+				else
+					return matched
+				end
+			end)
+		end
+		function minetest.get_translator(textdomain)
+			return function(str, ...) return  minetest.translate(textdomain or "", str, ...) end
+		end
+		S = minetest.get_translator("mobs")
+	end
+end
 
 mobs.intllib = S
 
