@@ -34,7 +34,7 @@ mobs:register_mob("mobs_animal:cow", {
 		{name = "mobs:meat_raw", chance = 1, min = 1, max = 3},
 		{name = "mobs:leather", chance = 1, min = 0, max = 2}
 	},
-	water_damage = 0,
+	water_damage = 0.01,
 	lava_damage = 5,
 	light_damage = 0,
 	animation = {
@@ -70,6 +70,7 @@ mobs:register_mob("mobs_animal:cow", {
 	},
 --	stay_near = {{"farming:straw", "group:grass"}, 10},
 	fear_height = 2,
+
 	on_rightclick = function(self, clicker)
 
 		-- feed or tame
@@ -92,7 +93,8 @@ mobs:register_mob("mobs_animal:cow", {
 
 		-- milk cow with empty bucket
 		if item == "bucket:bucket_empty"
-		or item == "wooden_bucket:bucket_wood_empty" then
+		or item == "wooden_bucket:bucket_wood_empty"
+		or item == "bucket_wooden:bucket_empty" then
 
 			--if self.gotten == true
 			if self.child == true then
@@ -100,8 +102,9 @@ mobs:register_mob("mobs_animal:cow", {
 			end
 
 			if self.gotten == true then
-				minetest.chat_send_player(name,
-					S("Cow already milked!"))
+
+				minetest.chat_send_player(name, S("Cow already milked!"))
+
 				return
 			end
 
@@ -112,7 +115,9 @@ mobs:register_mob("mobs_animal:cow", {
 
 			-- which bucket are we using
 			local ret_item = "mobs:bucket_milk"
-			if item == "wooden_bucket:bucket_wood_empty" then
+
+			if item == "wooden_bucket:bucket_wood_empty"
+			or item == "bucket_wooden:bucket_empty" then
 				ret_item = "mobs:wooden_bucket_milk"
 			end
 
@@ -120,7 +125,9 @@ mobs:register_mob("mobs_animal:cow", {
 				clicker:get_inventory():add_item("main", ret_item)
 			else
 				local pos = self.object:get_pos()
+
 				pos.y = pos.y + 0.5
+
 				minetest.add_item(pos, {name = ret_item})
 			end
 
@@ -144,17 +151,18 @@ mobs:register_mob("mobs_animal:cow", {
 
 
 if not mobs.custom_spawn_animal then
-mobs:spawn({
-	name = "mobs_animal:cow",
-	nodes = {"default:dirt_with_grass", "ethereal:green_dirt"},
-	neighbors = {"group:grass"},
-	min_light = 14,
-	interval = 60,
-	chance = 8000,
-	min_height = 5,
-	max_height = 200,
-	day_toggle = true
-})
+
+	mobs:spawn({
+		name = "mobs_animal:cow",
+		nodes = {"default:dirt_with_grass", "ethereal:green_dirt"},
+		neighbors = {"group:grass"},
+		min_light = 14,
+		interval = 60,
+		chance = 8000,
+		min_height = 5,
+		max_height = 200,
+		day_toggle = true
+	})
 end
 
 
@@ -170,7 +178,7 @@ minetest.register_craftitem(":mobs:bucket_milk", {
 	inventory_image = "mobs_bucket_milk.png",
 	stack_max = 1,
 	on_use = minetest.item_eat(8, "bucket:bucket_empty"),
-	groups = {food_milk = 1, flammable = 3, drink = 1},
+	groups = {food_milk = 1, flammable = 3, drink = 1}
 })
 
 -- glass of milk
@@ -178,7 +186,7 @@ minetest.register_craftitem(":mobs:glass_milk", {
 	description = S("Glass of Milk"),
 	inventory_image = "mobs_glass_milk.png",
 	on_use = minetest.item_eat(2, "vessels:drinking_glass"),
-	groups = {food_milk_glass = 1, flammable = 3, vessel = 1, drink = 1},
+	groups = {food_milk_glass = 1, flammable = 3, vessel = 1, drink = 1}
 })
 
 minetest.register_craft({
@@ -246,7 +254,7 @@ minetest.register_node(":mobs:cheeseblock", {
 	tiles = {"mobs_cheeseblock.png"},
 	is_ground_content = false,
 	groups = {oddly_breakable_by_hand = 3},
-	sounds = default.node_sound_dirt_defaults()
+	sounds = default and default.node_sound_dirt_defaults()
 })
 
 minetest.register_craft({
@@ -264,14 +272,20 @@ minetest.register_craft({
 })
 
 
--- check for wooden bucket mod and add compatibility
-if minetest.get_modpath("wooden_bucket") then
+-- check for either of the wood bucket mods and add compatibility
+local wb = minetest.get_modpath("wooden_bucket")
+local bw = minetest.get_modpath("bucket_wooden")
+
+if wb or bw then
+
+	local return_item = wb and "wooden_bucket:bucket_wood_empty"
+			or "bucket_wooden:bucket_empty"
 
 	minetest.register_craftitem(":mobs:wooden_bucket_milk", {
 		description = S("Wooden Bucket of Milk"),
 		inventory_image = "mobs_wooden_bucket_milk.png",
 		stack_max = 1,
-		on_use = minetest.item_eat(8, "wooden_bucket:bucket_wood_empty"),
+		on_use = minetest.item_eat(8, return_item),
 		groups = {food_milk = 1, flammable = 3, drink = 1}
 	})
 
@@ -282,7 +296,7 @@ if minetest.get_modpath("wooden_bucket") then
 			{"vessels:drinking_glass", "vessels:drinking_glass"},
 			{"mobs:wooden_bucket_milk", ""}
 		},
-		replacements = {{"mobs:wooden_bucket_milk", "wooden_bucket:bucket_wood_empty"}}
+		replacements = {{"mobs:wooden_bucket_milk", return_item}}
 	})
 
 	minetest.register_craft({
@@ -290,7 +304,7 @@ if minetest.get_modpath("wooden_bucket") then
 		recipe = {
 			{"group:food_milk_glass", "group:food_milk_glass"},
 			{"group:food_milk_glass", "group:food_milk_glass"},
-			{"wooden_bucket:bucket_wood_empty", ""}
+			{return_item, ""}
 		},
 		replacements = {
 			{"group:food_milk_glass", "vessels:drinking_glass 4"}
@@ -300,6 +314,6 @@ if minetest.get_modpath("wooden_bucket") then
 	minetest.register_craft({
 		output = "mobs:butter",
 		recipe = {{"mobs:wooden_bucket_milk", salt_item}},
-		replacements = {{"mobs:wooden_bucket_milk", "wooden_bucket:bucket_wood_empty"}}
+		replacements = {{"mobs:wooden_bucket_milk", return_item}}
 	})
 end

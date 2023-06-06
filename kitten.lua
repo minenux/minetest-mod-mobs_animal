@@ -2,18 +2,25 @@
 local S = mobs.intllib_animal
 local hairball = minetest.settings:get("mobs_hairball")
 
+local kitten_types = {
+
+	{	nodes = {"farming:jackolantern_on"},
+		skins = {"mobs_kitten_black.png"}
+	}
+}
+
 -- Kitten by Jordach / BFD
 
 mobs:register_mob("mobs_animal:kitten", {
-stepheight = 0.6,
+	stepheight = 0.6,
 	type = "animal",
-specific_attack = {"mobs_animal:rat"},
-damage = 1,
-attack_type = "dogfight",
-attack_animals = true, -- so it can attack rat
-attack_players = false,
-reach = 1,
-stepheight = 1.1,
+	specific_attack = {"mobs_animal:rat"},
+	damage = 1,
+	attack_type = "dogfight",
+	attack_animals = true, -- so it can attack rat
+	attack_players = false,
+	reach = 1,
+	stepheight = 1.1,
 	passive = false,
 	hp_min = 5,
 	hp_max = 10,
@@ -26,11 +33,11 @@ stepheight = 1.1,
 		{"mobs_kitten_striped.png"},
 		{"mobs_kitten_splotchy.png"},
 		{"mobs_kitten_ginger.png"},
-		{"mobs_kitten_sandy.png"},
+		{"mobs_kitten_sandy.png"}
 	},
 	makes_footstep_sound = false,
 	sounds = {
-		random = "mobs_kitten",
+		random = "mobs_kitten"
 	},
 	walk_velocity = 0.6,
 	walk_chance = 15,
@@ -38,9 +45,9 @@ stepheight = 1.1,
 	runaway = true,
 	jump = false,
 	drops = {
-		{name = "farming:string", chance = 1, min = 0, max = 1},
+		{name = "farming:string", chance = 1, min = 0, max = 1}
 	},
-	water_damage = 0,
+	water_damage = 0.01,
 	lava_damage = 5,
 	fear_height = 3,
 	animation = {
@@ -54,9 +61,31 @@ stepheight = 1.1,
 	},
 	follow = {
 		"mobs_animal:rat", "group:food_fish_raw",
-		"mobs_fish:tropical", "xocean:fish_edible"
+		"mobs_fish:tropical", "mobs_fish:clownfish", "xocean:fish_edible"
 	},
 	view_range = 8,
+
+	-- check surrounding nodes and spawn a specific kitten
+	on_spawn = function(self)
+
+		local pos = self.object:get_pos() ; pos.y = pos.y - 1
+		local tmp
+
+		for n = 1, #kitten_types do
+
+			tmp = kitten_types[n]
+
+			if minetest.find_node_near(pos, 1, tmp.nodes) then
+
+				self.base_texture = tmp.skins
+				self.object:set_properties({textures = tmp.skins})
+
+				return true
+			end
+		end
+
+		return true -- run only once, false/nil runs every activation
+	end,
 
 	on_rightclick = function(self, clicker)
 
@@ -91,8 +120,7 @@ stepheight = 1.1,
 		end
 		self.hairball_timer = 0
 
-		if self.child
-		or math.random(1, 250) > 1 then
+		if self.child or math.random(250) > 1 then
 			return
 		end
 
@@ -101,11 +129,8 @@ stepheight = 1.1,
 		minetest.add_item(pos, "mobs:hairball")
 
 		minetest.sound_play("default_dig_snappy", {
-			pos = pos,
-			gain = 1.0,
-			max_hear_distance = 5,
-		})
-	end,
+				pos = pos, gain = 1.0, max_hear_distance = 5}, true)
+	end
 })
 
 
@@ -116,17 +141,18 @@ if minetest.get_modpath("ethereal") then
 end
 
 if not mobs.custom_spawn_animal then
-mobs:spawn({
-	name = "mobs_animal:kitten",
-	nodes = {spawn_on},
-	neighbors = {"group:grass"},
-	min_light = 14,
-	interval = 60,
-	chance = 10000, -- 22000
-	min_height = 5,
-	max_height = 50,
-	day_toggle = true,
-})
+
+	mobs:spawn({
+		name = "mobs_animal:kitten",
+		nodes = {spawn_on},
+		neighbors = {"group:grass"},
+		min_light = 14,
+		interval = 60,
+		chance = 10000,
+		min_height = 5,
+		max_height = 50,
+		day_toggle = true
+	})
 end
 
 
@@ -143,7 +169,8 @@ local hairball_items = {
 	"default:clay_lump", "default:paper", "default:dry_grass_1", "dye:red", "",
 	"farming:string", "mobs:chicken_feather", "default:acacia_bush_sapling", "",
 	"default:bush_sapling", "default:copper_lump", "default:iron_lump", "",
-	"dye:black", "dye:brown", "default:obsidian_shard", "default:tin_lump"
+	"dye:black", "dye:brown", "default:obsidian_shard", "default:tin_lump",
+	"ethereal:fish_tetra"
 }
 
 minetest.register_craftitem(":mobs:hairball", {
@@ -162,13 +189,10 @@ minetest.register_craftitem(":mobs:hairball", {
 		end
 
 		minetest.sound_play("default_place_node_hard", {
-			pos = newpos,
-			gain = 1.0,
-			max_hear_distance = 5,
-		})
+				pos = newpos, gain = 1.0, max_hear_distance = 5}, true)
 
 		itemstack:take_item()
 
 		return itemstack
-	end,
+	end
 })

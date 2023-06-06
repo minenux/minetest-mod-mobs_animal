@@ -4,18 +4,15 @@ local path = minetest.get_modpath(minetest.get_current_modname()) .. "/"
 local S
 
 if minetest.get_translator ~= nil then
-	S = minetest.get_translator("mobs")
+	S = minetest.get_translator("mobs_animal") -- 5.x translation function
 else
 	if minetest.get_modpath("intllib") then
 		dofile(minetest.get_modpath("intllib").."/init.lua")
 		if intllib.make_gettext_pair then
-			-- New method using gettext.
-			gettext, ngettext = intllib.make_gettext_pair()
+			S = intllib.make_gettext_pair() -- new gettext method
 		else
-			-- Old method using text files.
-		gettext = intllib.Getter()
+			S = intllib.Getter() -- old text file method
 		end
-		S = gettext
 	else -- boilerplate function
 		S = function(str, ...)
 			local args = {...}
@@ -59,7 +56,9 @@ end
 
 
 -- Lucky Blocks
-dofile(path .. "lucky_block.lua")
+if minetest.get_modpath("lucky_block") then
+	dofile(path .. "lucky_block.lua")
+end
 
 
 print ("[MOD] Mobs Redo Animals loaded")
