@@ -23,8 +23,11 @@ else
 	end
 end
 
-mobs.intllib_animal = S
+local is50 = minetest.has_feature("object_use_texture_alpha") or nil
+local is54 = minetest.has_feature("use_texture_alpha_string_modes") or nil
 
+mobs.intllib_animal = S
+mobs.is54a = is54
 
 -- Check for custom mob spawn file
 local input = io.open(path .. "spawn.lua", "r")
