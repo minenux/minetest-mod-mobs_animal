@@ -1,5 +1,7 @@
 # Convert '.po' file to '.txt' file.
 
+This is only used for older engines.. newer ones uses the plain text files with tr extensions
+
 ### COMMAND SAMPLE
 ''''
 $ lua po2tr.lua "Your Name (Your Site) <Your Email>" "pt_BR.po"
