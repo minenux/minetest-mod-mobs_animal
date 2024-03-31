@@ -127,9 +127,11 @@ mobs:register_mob("mobs_animal:kitten", {
 		local pos = self.object:get_pos()
 
 		minetest.add_item(pos, "mobs:hairball")
-
-		minetest.sound_play("default_dig_snappy", {
-				pos = pos, gain = 1.0, max_hear_distance = 5}, true)
+		if mobs.is54a then
+			minetest.sound_play("default_dig_snappy", { pos = pos, gain = 1.0, max_hear_distance = 5}, true)
+		else
+			minetest.sound_play("default_dig_snappy", { pos = pos, gain = 1.0, max_hear_distance = 5})
+		end
 	end
 })
 
@@ -187,10 +189,11 @@ minetest.register_craftitem(":mobs:hairball", {
 		and minetest.registered_items[item] then
 			minetest.add_item(newpos, {name = item})
 		end
-
-		minetest.sound_play("default_place_node_hard", {
-				pos = newpos, gain = 1.0, max_hear_distance = 5}, true)
-
+		if mobs.is50a then
+			minetest.sound_play("default_place_node_hard", {pos = newpos, gain = 1.0, max_hear_distance = 5}, true)
+		else
+			minetest.sound_play("default_place_node_hard", {pos = newpos, gain = 1.0, max_hear_distance = 5})
+		end
 		itemstack:take_item()
 
 		return itemstack

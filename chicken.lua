@@ -90,20 +90,25 @@ mobs:register_mob("mobs_animal:chicken", {
 		end
 		self.egg_timer = 0
 
-		if self.child
-		or math.random(100) > 1 then
+		if self.child then
 			return
 		end
 
 		local pos = self.object:get_pos() ; if not pos then return end
 
-		minetest.add_item(pos, "mobs:egg")
+		if math.random(100) == 1 then
 
-		minetest.sound_play("default_place_node_hard", {
-			pos = pos,
-			gain = 1.0,
-			max_hear_distance = 5
-		}, true)
+			minetest.add_item(pos, "mobs:egg")
+
+			if mobs.is52a then
+				minetest.sound_play("default_place_node_hard", { pos = pos, gain = 1.0, max_hear_distance = 5}, true)
+			else
+				minetest.sound_play("default_place_node_hard", { pos = pos, gain = 1.0, max_hear_distance = 5})
+			end
+
+		elseif math.random(100) < 6 then
+			minetest.add_item(pos, "mobs:chicken_feather")
+		end
 	end
 })
 
