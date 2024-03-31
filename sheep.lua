@@ -382,9 +382,11 @@ end
 if not mobs.custom_spawn_animal then
 
 	local max_ht = 400
-	local spawn_on = {"default:dirt_with_grass", "ethereal:green_dirt"}
+	local spawn_on = {"default:dirt_with_grass"}
 	local mod_ethereal = minetest.get_modpath("ethereal")
 	local spawn_chance = mod_ethereal and 12000 or 8000
+
+	if mod_ethereal then spawn_on = {"default:dirt_with_grass", "ethereal:green_dirt"} end
 
 	mobs:spawn({
 		name = "mobs_animal:sheep_white",
@@ -442,8 +444,8 @@ if not mobs.custom_spawn_animal then
 				local entity = mobs:add_mob(pos,
 						{name = "mobs_animal:sheep_" .. types, child = lamb})
 
--- nil check
-if not entity then return end
+				-- nil check
+				if not entity then return end
 
 				if not lamb then
 					-- Set horns attribute, lower height will be rarer.

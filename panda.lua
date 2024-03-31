@@ -69,12 +69,15 @@ stepheight = 0.6,
 	end
 })
 
+local spawn_on = {"default:dirt_with_grass"}
+
+if minetest.get_modpath("ethereal") then spawn_on = {"ethereal:bamboo_dirt", "default:dirt_with_grass"} end
 
 if minetest.get_modpath("ethereal") and not mobs.custom_spawn_animal then
 
 	mobs:spawn({
 		name = "mobs_animal:panda",
-		nodes = {"ethereal:bamboo_dirt"},
+		nodes = spawn_on,
 		neighbors = {"group:grass"},
 		min_light = 14,
 		interval = 60,

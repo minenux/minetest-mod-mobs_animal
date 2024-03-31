@@ -5,7 +5,7 @@ local S = mobs.intllib_animal
 -- Rat by KPavel and PilzAdam (B3D model by sirrobzeroone)
 
 mobs:register_mob("mobs_animal:rat", {
-stepheight = 0.6,
+	stepheight = 0.6,
 	type = "animal",
 	passive = true,
 	hp_min = 1,
